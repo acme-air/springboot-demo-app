@@ -129,15 +129,16 @@ pipeline {
                 stage('SonarQube') {
                     steps {
                         script {
-                            sh '''
-                            mvn sonar:sonar \
-                                -Dsonar.projectKey=springboot-demo-app \
-                                -Dsonar.host.url=http://3.14.28.26:9000 \
-                                -Dsonar.login=378f7e702fce5edceb6532aef4fc6e4afc4ad47e
-                            '''
                             withSonarQubeEnv('acme-sonarqube') {
                                 def scannerHome = tool 'acme-sonarqube';
-                                sh "${scannerHome}/bin/sonar-scanner"
+                                // sh "${scannerHome}/bin/sonar-scanner"
+                                sh '''
+                                mvn sonar:sonar -f springboot-demo-app/pom.xml \
+                                    -Dsonar.projectKey=springboot-demo-app \
+                                    -Dsonar.host.url=http://3.14.28.26:9000 \
+                                    -Dsonar.login=378f7e702fce5edceb6532aef4fc6e4afc4ad47e
+                                '''
+
                                 sh "sleep 15"
                             }
                             def qg = waitForQualityGate()
