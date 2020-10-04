@@ -124,45 +124,51 @@ pipeline {
                 }
             }
         }
-        // stage('Quality Gate') {
-        //     parallel {
-        //         stage('SonarQube') {
-        //             steps {
-        //                 script {
-        //                     withSonarQubeEnv('acme-sonarqube') {
-        //                         def scannerHome = tool 'acme-sonarqube';
-        //                         sh "${scannerHome}/bin/sonar-scanner"
-        //                         sh "sleep 15"
-        //                     }
-        //                     def qg = waitForQualityGate()
-        //                     if (qg.status != 'OK') {
-        //                         error "Pipeline aborted due to quality gate failure: ${qg.status}"
-        //                     }
-        //                 }
-        //             }
-        //         } // stage
-        //         stage("OWASP Check") {
-        //             steps {        
-        //                 // DEMO note: Uncommenting the below would make the dependency check work but will take +4 minutes for the builds to complete
-        //                 //
-        //                 // dependencyCheck additionalArguments: '', odcInstallation: 'acme-dependency-check' 
-        //                 // dependencyCheckPublisher pattern: ''
-        //                 sh 'echo done'
-        //             } // steps
-        //         } // stage
-        //         stage('Twistlock') {
-        //             steps {
-        //                 script {
-        //                     echo "Running Twistlock scan on image ${templateName}:latest"
-        //                     prismaCloudScanImage ca: '', cert: '', dockerAddress: 'tcp://192.168.65.4:2376', ignoreImageBuildTime: true, image: 'acmeair-web-app:latest', key: '', logLevel: 'debug', podmanPath: '', project: '', resultsFile: 'prisma-cloud-scan-results.json'
-        //                     echo "Completed Twistlock scan. Publishing the report..."
-        //                     prismaCloudPublish resultsFilePattern: 'prisma-cloud-scan-results.json'
-        //                     echo "Completed Twistlock publish"
-        //                 } // script
-        //             } // steps
-        //         } // stage
-        //     } // parallel
-        // } // stage
+        stage('Quality Gate') {
+            parallel {
+                stage('SonarQube') {
+                    steps {
+                        script {
+                            sh '''
+                            mvn sonar:sonar \
+                                -Dsonar.projectKey=springboot-demo-app \
+                                -Dsonar.host.url=http://3.14.28.26:9000 \
+                                -Dsonar.login=378f7e702fce5edceb6532aef4fc6e4afc4ad47e
+                            '''
+                            withSonarQubeEnv('acme-sonarqube') {
+                                def scannerHome = tool 'acme-sonarqube';
+                                sh "${scannerHome}/bin/sonar-scanner"
+                                sh "sleep 15"
+                            }
+                            def qg = waitForQualityGate()
+                            if (qg.status != 'OK') {
+                                error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                            }
+                        }
+                    }
+                } // stage
+                stage("OWASP Check") {
+                    steps {        
+                        // DEMO note: Uncommenting the below would make the dependency check work but will take +4 minutes for the builds to complete
+                        //
+                        // dependencyCheck additionalArguments: '', odcInstallation: 'acme-dependency-check' 
+                        // dependencyCheckPublisher pattern: ''
+                        sh 'echo done'
+                    } // steps
+                } // stage
+                stage('Twistlock - TBD') {
+                    steps {
+                        script {
+                            echo "Running Twistlock scan on image ${templateName}:latest"
+                            // prismaCloudScanImage ca: '', cert: '', dockerAddress: 'tcp://192.168.65.4:2376', ignoreImageBuildTime: true, image: 'acmeair-web-app:latest', key: '', logLevel: 'debug', podmanPath: '', project: '', resultsFile: 'prisma-cloud-scan-results.json'
+                            // echo "Completed Twistlock scan. Publishing the report..."
+                            // prismaCloudPublish resultsFilePattern: 'prisma-cloud-scan-results.json'
+                            // echo "Completed Twistlock publish"
+                        } // script
+                    } // steps
+                } // stage
+            } // parallel
+        } // stage
         stage('deploy') {
             steps {
                 sh "oc new-build --name springboot-demo-app --binary -n apmt-project1 --image-stream=apmt-project1/openjdk-11-rhel7  || true"
