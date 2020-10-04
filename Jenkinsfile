@@ -139,7 +139,7 @@ pipeline {
                                     -Dsonar.login=378f7e702fce5edceb6532aef4fc6e4afc4ad47e
                                 '''
 
-                                sh "sleep 15"
+                                // sh "sleep 15"
                             }
                             def qg = waitForQualityGate()
                             if (qg.status != 'OK') {
