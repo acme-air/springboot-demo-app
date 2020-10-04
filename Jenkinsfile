@@ -1,24 +1,5 @@
-// node('maven') {
-//     stage('Initialize') {
-//         sh "git config --global http.sslVerify false"
-//         sh "git clone https://github.com/acme-air/springboot-demo-app"
-//     }
-//     stage('Build') {
-//         sh "mvn -v"
-//         sh "mvn clean package -f springboot-demo-app/pom.xml"
-         
-//         def jarFile = sh(returnStdout: true, script: 'find springboot-demo-app/target -maxdepth 1 -regextype posix-extended -regex ".+\\.(jar|war)\$" | head -n 1').trim()
-//         sh "cp ${jarFile} app.jar"
-//     }
-//     stage('Deploy') {
-//         sh "oc new-build --name springboot-demo-app --binary -n apmt-project1 --image-stream=apmt-project1/openjdk-11-rhel7  || true"
-//         sh "oc start-build springboot-demo-app --from-file=app.jar -n apmt-project1 --follow --wait"
-//         sh "oc new-app apmt-project1/springboot-demo-app || true"
-//         sh "oc expose svc/springboot-demo-app || true"
-//     }
-// }
-
 def templateName = 'springboot-demo-app'
+
 pipeline {
     agent {
       node {
