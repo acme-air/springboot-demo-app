@@ -9,7 +9,7 @@ public class HelloController {
     // @RequestMapping(value = "/", method = RequestMethod.GET)
     @RequestMapping("/")
     public String index() {
-        return "Hello there! Greetings from Spring Boot!";
+        return "Hello there! Greetings from Spring Boot! v1.1";
     }
 
 }
