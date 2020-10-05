@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RestController
 public class HelloController {
 
-    @RequestMapping("/", method = "GET")
+    @RequestMapping("/", method = RequestMethod.GET)
     public String index() {
         return "Hello there! Greetings from Spring Boot!";
     }
