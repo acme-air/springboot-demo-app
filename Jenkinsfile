@@ -43,7 +43,7 @@ pipeline {
                 script {
                     try {
                         sh '''#!/bin/bash
-                        # npm i -g eslint
+                        # mvn lint:check
                         echo Linting
                         '''
                     } finally {
