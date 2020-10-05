@@ -13,7 +13,7 @@ public class HelloController {
         // Business logic here...
         // 
 
-        return "Hello there! Greetings from Spring Boot! v1.1";
+        return "Hello there! Greetings from Spring Boot! v1.2";
     }
 
 }
